@@ -1,0 +1,10 @@
+.idea/
+google-services.json
+build/
+.gradle/
+projectFilesBackup/
+app/src/androidTest/
+app/src/debug/
+app/src/release/
+app/src/test/
+local.properties
