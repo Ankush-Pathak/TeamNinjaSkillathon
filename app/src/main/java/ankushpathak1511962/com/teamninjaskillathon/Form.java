@@ -6,6 +6,7 @@ import android.os.DropBoxManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -18,7 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class Form extends AppCompatActivity {
     EditText editTextSerialNo, editTextFirstName, editTextPhoneNo, editTextEmail, editTextLastName;
@@ -45,7 +48,7 @@ public class Form extends AppCompatActivity {
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                boolean phoneVerify=verifyPhone();
                 if(submitEmail && submitName && submitPhone) {
                     Entry entry = new Entry();
                     entry.setName(editTextFirstName.getText().toString() + editTextLastName.getText().toString());
@@ -89,6 +92,9 @@ public class Form extends AppCompatActivity {
         buttonSubmit = (Button)findViewById(R.id.buttonSubmit);
         //TODO Populate spinner
         spinnerCountryCode = (Spinner)findViewById(R.id.spinnerCountryCode);
+        populateSpinner();
+
+
 
         progressDialog = new ProgressDialog(Form.this);
         progressDialog.setTitle("Generating serial no");
@@ -173,7 +179,50 @@ public class Form extends AppCompatActivity {
         progressDialog.dismiss();
     }
 
+    void populateSpinner()
+    {
+        List<String> countryCode=new ArrayList<String>();
+        String strTens,strUnits,strFinal;
+        //below code generates 00 to 99 and adds to List countryCode.
+        for(int i=0;i<10;i++)
+        {
+            strTens=Integer.toString(i);
+            for(int j=0;j<10;j++)
+            {
+                strUnits=Integer.toString(j);
+                strFinal=strTens.concat(strUnits);
+                countryCode.add(strFinal);
 
+            }
+        }
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,countryCode);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCountryCode.setAdapter(adapter);
+
+
+    }
+
+    boolean verifyPhone()
+    {
+        String phoneNo=editTextPhoneNo.toString();
+        phoneNo.trim(); //remove spaces from both ends of string
+        if(phoneNo.length()!=10)
+        {
+            return false;
+        }
+
+        String[] invalidNo={"1111111111","2222222222","3333333333","4444444444","5555555555","6666666666","7777777777","8888888888","9999999999"};
+        for(int i=0;i<9;i++)
+        {
+            if(phoneNo.equals(invalidNo[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
