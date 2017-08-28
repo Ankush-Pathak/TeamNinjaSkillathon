@@ -13,7 +13,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textViewSerialNo"
@@ -21,52 +22,78 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="TextView"
-                android:textSize="18sp" />
+                android:textColor="@android:color/background_dark"
+                android:textSize="22sp" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/editTextSerialNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:ems="10"
+                android:hint="Serial No"
                 android:inputType="textPersonName"
-                android:text="Name"
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/editTextFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:ems="10"
+                android:hint="First Name"
                 android:inputType="textPersonName"
-                android:text="Name"
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editText3"
+                android:id="@+id/editTextLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:ems="10"
-                android:inputType="phone"
+                android:hint="Last Name"
+                android:inputType="textPersonName"
                 android:textSize="18sp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spinnerCountryCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5" />
+
+                <EditText
+                    android:id="@+id/editTextPhoneNo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="Contact"
+                    android:inputType="phone"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
             <EditText
-                android:id="@+id/editText4"
+                android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:ems="10"
+                android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/button2"
-                android:layout_width="match_parent"
+                android:id="@+id/buttonSubmit"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="Button"
+                android:text="Submit"
                 android:textSize="18sp" />
 
         </LinearLayout>
