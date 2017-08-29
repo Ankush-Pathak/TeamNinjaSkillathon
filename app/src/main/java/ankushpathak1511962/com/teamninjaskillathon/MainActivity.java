@@ -9,18 +9,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import ankushpathak1511962.com.teamninjaskillathon.R;
 
 import static ankushpathak1511962.com.teamninjaskillathon.R.id.fab;
+import static ankushpathak1511962.com.teamninjaskillathon.R.id.view_offset_helper;
 
 public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab;
+    ListView listView;
     DatabaseReference databaseReference;
+    FirebaseListAdapter listAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,12 +45,21 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();*/
             }
         });
-
+        listAdapter=new FirebaseListAdapter<Entry>(this,Entry.class,android.R.layout.simple_list_item_2,databaseReference) {
+            @Override
+            protected void populateView(View v, Entry model, int position) {
+                ((TextView)v.findViewById(android.R.id.text1)).setText(model.getName());
+                ((TextView)v.findViewById(android.R.id.text2)).setText(model.getSerialNo());
+            }
+        };
+        listView.setAdapter(listAdapter);
     }
 
     void setup(){
+        //view initialization
         fab = (FloatingActionButton) findViewById(R.id.fab);
-
+        listView = (ListView)findViewById(R.id.listView);
+        //firebase reference
         databaseReference = FirebaseDatabase.getInstance().getReference().child("TeamNinja");
     }
     @Override
