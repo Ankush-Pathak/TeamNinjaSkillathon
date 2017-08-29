@@ -175,14 +175,12 @@ public class Form extends AppCompatActivity {
         editTextPhoneNo.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(verifyPhone())
                     clearErrors();
             }
         });
         editTextEmail.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(verifyEmail())
                     clearErrors();
             }
         });
@@ -211,7 +209,7 @@ public class Form extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                clearErrors();
+                //clearErrors();
                 if(verifyEmail())
                 {
                     editTextEmail.setError("Email valid");
@@ -238,7 +236,7 @@ public class Form extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                clearErrors();
+                //clearErrors();
                 if(verifyPhone())
                 {
                     editTextPhoneNo.setError("Phone valid");
@@ -313,10 +311,15 @@ public class Form extends AppCompatActivity {
 
     void clearErrors()
     {
-        editTextEmail.setErrorEnabled(false);
+        if(verifyEmail())
+            editTextEmail.setErrorEnabled(false);
+
         editTextFirstName.setErrorEnabled(false);
         editTextLastName.setErrorEnabled(false);
-        editTextPhoneNo.setErrorEnabled(false);
+
+        if(verifyPhone())
+            editTextPhoneNo.setErrorEnabled(false);
+
         editTextSerialNo.setErrorEnabled(false);
     }
     @Override
