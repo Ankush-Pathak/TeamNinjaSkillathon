@@ -137,8 +137,8 @@ public class Form extends AppCompatActivity {
         populateSpinner();
 
         progressDialog = new ProgressDialog(Form.this);
-        progressDialog.setTitle("Generating serial no");
-        progressDialog.setMessage("Please wait");
+        progressDialog.setTitle("Generating Serial No.");
+        progressDialog.setMessage("Please wait\nEnsure a working internet connection");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -423,11 +423,12 @@ public class Form extends AppCompatActivity {
 
     //Capitalize first character of string, for first name and last name fields
     String formatName(String name){
-        if(name.length() > 1) {
+        if(name.length() > 0) {
             name = name.trim();
             name = name.toLowerCase();
             //name = name.replace(name.charAt(0), Character.toUpperCase(name.charAt(0)));
-            name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            if(name.length() > 0)
+                name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
         }
         return name;
     }
