@@ -53,9 +53,38 @@ public class Form extends AppCompatActivity {
         initialise();
 
         onTextChangeListeners();
+
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Check if any field is empty
+                if(editTextFirstName.getEditText().getText().toString().length() == 0)
+                {
+                    Toast.makeText(Form.this,"First name empty",Toast.LENGTH_SHORT).show();
+                    editTextFirstName.requestFocus();
+                    return;
+                }
+                else if(editTextLastName.getEditText().getText().toString().length() == 0)
+                {
+                    Toast.makeText(Form.this,"Last name empty",Toast.LENGTH_SHORT).show();
+                    editTextLastName.requestFocus();
+                    return;
+                }
+                else if(editTextPhoneNo.getEditText().getText().toString().length() == 0)
+                {
+                    Toast.makeText(Form.this,"Contact empty",Toast.LENGTH_SHORT).show();
+                    editTextPhoneNo.requestFocus();
+                    return;
+                }
+                else if(editTextEmail.getEditText().getText().toString().length() == 0)
+                {
+                    Toast.makeText(Form.this,"Email empty",Toast.LENGTH_SHORT).show();
+                    editTextEmail.requestFocus();
+                    return;
+                }
+
+                //Validate field values
                 if(verifyEmail() && verifyFirstName() && verifyLastName() && verifyPhone()) {
                     Entry entry = new Entry();
                     entry.setName(formatName(editTextFirstName.getEditText().getText().toString()) + " " + formatName(editTextLastName.getEditText().getText().toString()));
@@ -71,6 +100,8 @@ public class Form extends AppCompatActivity {
                     startActivity(new Intent(Form.this,MainActivity.class));
                     finish();
                 }
+
+
                 if(!verifyLastName())
                 {
                     Toast.makeText(Form.this,"Error in field last name",Toast.LENGTH_SHORT).show();
@@ -85,7 +116,7 @@ public class Form extends AppCompatActivity {
                 }
                 if(!verifyPhone())
                 {
-                    Toast.makeText(Form.this,"Error in field phone",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Form.this,"Error in field contact",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -101,11 +132,9 @@ public class Form extends AppCompatActivity {
         editTextSerialNo = (TextInputLayout)findViewById(R.id.editTextSerialNo);
         textViewSerialNo = (TextView)findViewById(R.id.textViewSerialNo);
         buttonSubmit = (Button)findViewById(R.id.buttonSubmit);
-        //TODO Populate spinner
         spinnerCountryCode = (Spinner)findViewById(R.id.spinnerCountryCode);
+
         populateSpinner();
-
-
 
         progressDialog = new ProgressDialog(Form.this);
         progressDialog.setTitle("Generating serial no");
@@ -174,6 +203,7 @@ public class Form extends AppCompatActivity {
 
     void onTextChangeListeners()
     {
+        //Clear errors of editTexts which are out of focus, keep errors if necessary
         editTextPhoneNo.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -189,15 +219,19 @@ public class Form extends AppCompatActivity {
         editTextLastName.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                editTextLastName.getEditText().setText(formatName(editTextLastName.getEditText().getText().toString()));
                 clearErrors();
             }
         });
         editTextFirstName.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                editTextFirstName.getEditText().setText(formatName(editTextFirstName.getEditText().getText().toString()));
                 clearErrors();
             }
         });
+
+        //To show errors after validation of email and repeating for other fields
         editTextEmail.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -292,7 +326,7 @@ public class Form extends AppCompatActivity {
                 String name = s.toString();
                 if(name.length()!=0) {
                     if (Character.isSpaceChar(name.charAt(name.length() - 1))) {
-                        spinnerCountryCode.requestFocus();
+                        editTextPhoneNo.requestFocus();
                     }
                 }
             }
@@ -314,6 +348,7 @@ public class Form extends AppCompatActivity {
 
     void setup()
     {
+        //Enable all fields and generate serial string and add it to relevant edittext
         editTextLastName.setEnabled(true);
         editTextPhoneNo.setEnabled(true);
         editTextEmail.setEnabled(true);
@@ -331,6 +366,7 @@ public class Form extends AppCompatActivity {
 
     void populateSpinner()
     {
+        //Populate spinners with country codes, these can be customized as necessary
         List<String> countryCode=new ArrayList<String>();
         String strTens,strUnits,strFinal;
         //below code generates 00 to 99 and adds to List countryCode.
@@ -349,10 +385,14 @@ public class Form extends AppCompatActivity {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCountryCode.setAdapter(adapter);
+        spinnerCountryCode.setSelection(91,true);
+        spinnerCountryCode.setVisibility(View.GONE);
+        spinnerCountryCode.setVisibility(View.VISIBLE);
 
 
     }
 
+    //Functions to verify field values
     boolean verifyPhone()
     {
         String phoneNo=editTextPhoneNo.getEditText().getText().toString();
@@ -381,14 +421,20 @@ public class Form extends AppCompatActivity {
         return lastName.matches("[a-zA-Z]+");
     }
 
+    //Capitalize first character of string, for first name and last name fields
     String formatName(String name){
-        name=name.trim();
-        name=name.toLowerCase();
-        name=name.replace(name.charAt(0),Character.toUpperCase(name.charAt(0)));
+        if(name.length() > 1) {
+            name = name.trim();
+            name = name.toLowerCase();
+            //name = name.replace(name.charAt(0), Character.toUpperCase(name.charAt(0)));
+            name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+        }
         return name;
     }
+
     void clearErrors()
     {
+        //Clear error of a field only if field value validated
         if(verifyEmail())
             editTextEmail.setErrorEnabled(false);
         if(verifyFirstName())
@@ -401,6 +447,7 @@ public class Form extends AppCompatActivity {
 
         editTextSerialNo.setErrorEnabled(false);
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
