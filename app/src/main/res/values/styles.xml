@@ -16,5 +16,11 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="ErrorCorrect" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">#94f289</item>
+    </style>
+    <style name="ErrorInCorrect" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">#ff0008</item>
+    </style>
 
 </resources>

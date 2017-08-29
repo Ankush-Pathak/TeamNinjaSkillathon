@@ -2,9 +2,17 @@ package ankushpathak1511962.com.teamninjaskillathon;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.DropBoxManager;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,9 +30,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Form extends AppCompatActivity {
-    EditText editTextSerialNo, editTextFirstName, editTextPhoneNo, editTextEmail, editTextLastName;
+    TextInputLayout editTextSerialNo, editTextFirstName, editTextPhoneNo, editTextEmail, editTextLastName;
     TextView textViewSerialNo;
     Spinner spinnerCountryCode;
     Calendar calendar;
@@ -33,7 +42,7 @@ public class Form extends AppCompatActivity {
     DatabaseReference databaseReference, databaseReferenceCounter, databaseReferenceDay;
 
     //Set respective boolean to false here when adding validation code
-    boolean submitName = true, submitPhone = true, submitEmail = true;
+    boolean submitName = true;
 
     String serial = "";
     ProgressDialog progressDialog;
@@ -45,15 +54,15 @@ public class Form extends AppCompatActivity {
 
         initialise();
 
+        onTextChangeListeners();
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean phoneVerify=verifyPhone();
-                if(submitEmail && submitName && submitPhone) {
+                if(verifyEmail() && submitName && verifyPhone()) {
                     Entry entry = new Entry();
-                    entry.setName(editTextFirstName.getText().toString() + editTextLastName.getText().toString());
-                    entry.setEmail(editTextEmail.getText().toString());
-                    entry.setPhoneNo(editTextPhoneNo.getText().toString());
+                    entry.setName(editTextFirstName.getEditText().getText().toString() + editTextLastName.getEditText().getText().toString());
+                    entry.setEmail(editTextEmail.getEditText().getText().toString());
+                    entry.setPhoneNo(editTextPhoneNo.getEditText().getText().toString());
                     entry.setSerialNo(serial);
 
                     databaseReference.push().setValue(entry);
@@ -66,15 +75,15 @@ public class Form extends AppCompatActivity {
                 }
                 if(!submitName)
                 {
-                    Toast.makeText(Form.this,"Error in field name",Toast.LENGTH_LONG).show();
+                    Toast.makeText(Form.this,"Error in field name",Toast.LENGTH_SHORT).show();
                 }
-                if(!submitEmail)
+                if(!verifyEmail())
                 {
-                    Toast.makeText(Form.this,"Error in field email",Toast.LENGTH_LONG).show();
+                    Toast.makeText(Form.this,"Error in field email",Toast.LENGTH_SHORT).show();
                 }
-                if(!submitPhone)
+                if(!verifyPhone())
                 {
-                    Toast.makeText(Form.this,"Error in field phone",Toast.LENGTH_LONG).show();
+                    Toast.makeText(Form.this,"Error in field phone",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -83,11 +92,11 @@ public class Form extends AppCompatActivity {
 
     void initialise()
     {
-        editTextEmail = (EditText)findViewById(R.id.editTextEmail);
-        editTextFirstName = (EditText)findViewById(R.id.editTextFirstName);
-        editTextLastName = (EditText)findViewById(R.id.editTextLastName);
-        editTextPhoneNo = (EditText)findViewById(R.id.editTextPhoneNo);
-        editTextSerialNo = (EditText)findViewById(R.id.editTextSerialNo);
+        editTextEmail = (TextInputLayout)findViewById(R.id.editTextEmail);
+        editTextFirstName = (TextInputLayout)findViewById(R.id.editTextFirstName);
+        editTextLastName = (TextInputLayout)findViewById(R.id.editTextLastName);
+        editTextPhoneNo = (TextInputLayout)findViewById(R.id.editTextPhoneNo);
+        editTextSerialNo = (TextInputLayout)findViewById(R.id.editTextSerialNo);
         textViewSerialNo = (TextView)findViewById(R.id.textViewSerialNo);
         buttonSubmit = (Button)findViewById(R.id.buttonSubmit);
         //TODO Populate spinner
@@ -161,6 +170,89 @@ public class Form extends AppCompatActivity {
 
     }
 
+    void onTextChangeListeners()
+    {
+        editTextPhoneNo.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(verifyPhone())
+                    clearErrors();
+            }
+        });
+        editTextEmail.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(verifyEmail())
+                    clearErrors();
+            }
+        });
+        editTextLastName.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                clearErrors();
+            }
+        });
+        editTextFirstName.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                clearErrors();
+            }
+        });
+        editTextEmail.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                clearErrors();
+                if(verifyEmail())
+                {
+                    editTextEmail.setError("Email valid");
+                    editTextEmail.setErrorTextAppearance(R.style.ErrorCorrect);
+                }
+                else
+                {
+                    editTextEmail.setError("Email invalid");
+                    editTextEmail.setErrorTextAppearance(R.style.ErrorInCorrect);
+                }
+            }
+        });
+
+        editTextPhoneNo.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                clearErrors();
+                if(verifyPhone())
+                {
+                    editTextPhoneNo.setError("Phone valid");
+                    editTextPhoneNo.setErrorTextAppearance(R.style.ErrorCorrect);
+                }
+                else
+                {
+                    editTextPhoneNo.setError("Phone invalid");
+                    editTextPhoneNo.setErrorTextAppearance(R.style.ErrorInCorrect);
+                }
+            }
+        });
+    }
+
 
     void setup()
     {
@@ -174,7 +266,7 @@ public class Form extends AppCompatActivity {
         serial += String.format("%02d",calendar.get(Calendar.MONTH));
         serial += String.format("%02d",calendar.get(Calendar.DAY_OF_MONTH));
         serial += String.format("%02d",currentSerial);
-        editTextSerialNo.setText(serial);
+        editTextSerialNo.getEditText().setText(serial);
         textViewSerialNo.setText("Serial no : " + serial);
         progressDialog.dismiss();
     }
@@ -191,7 +283,7 @@ public class Form extends AppCompatActivity {
             {
                 strUnits=Integer.toString(j);
                 strFinal=strTens.concat(strUnits);
-                countryCode.add(strFinal);
+                countryCode.add("+" + strFinal);
 
             }
         }
@@ -205,23 +297,27 @@ public class Form extends AppCompatActivity {
 
     boolean verifyPhone()
     {
-        String phoneNo=editTextPhoneNo.toString();
+        String phoneNo=editTextPhoneNo.getEditText().getText().toString();
         phoneNo.trim(); //remove spaces from both ends of string
-        if(phoneNo.length()!=10)
-        {
-            return false;
-        }
+        return phoneNo.matches("[789]\\d\\d\\d\\d\\d\\d\\d\\d\\d");
 
-        String[] invalidNo={"1111111111","2222222222","3333333333","4444444444","5555555555","6666666666","7777777777","8888888888","9999999999"};
-        for(int i=0;i<9;i++)
-        {
-            if(phoneNo.equals(invalidNo[i]))
-            {
-                return false;
-            }
-        }
-        return true;
+    }
 
+    boolean verifyEmail()
+    {
+        String email=editTextEmail.getEditText().getText().toString();
+        email.trim(); //remove spaces from both ends of string
+        //any combi @ any combi . any combi (.->once or zero any combi .->once or zero any combi .->once or zero any combi)->once or zero
+        return email.matches("[a-z0-9A-Z_+\\.]+@[a-z0-9A-Z]+\\.[a-zA-Z0-9]+[[\\.]?[a-zA-Z0-9]+[\\.]?[a-zA-Z0-9]]?");
+    }
+
+    void clearErrors()
+    {
+        editTextEmail.setErrorEnabled(false);
+        editTextFirstName.setErrorEnabled(false);
+        editTextLastName.setErrorEnabled(false);
+        editTextPhoneNo.setErrorEnabled(false);
+        editTextSerialNo.setErrorEnabled(false);
     }
     @Override
     public void onBackPressed() {
