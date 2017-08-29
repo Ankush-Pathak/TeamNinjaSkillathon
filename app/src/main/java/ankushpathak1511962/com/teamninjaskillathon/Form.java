@@ -41,8 +41,6 @@ public class Form extends AppCompatActivity {
     int currentSerial = 1;
     DatabaseReference databaseReference, databaseReferenceCounter, databaseReferenceDay;
 
-    //Set respective boolean to false here when adding validation code
-    boolean submitName = true;
 
     String serial = "";
     ProgressDialog progressDialog;
@@ -58,11 +56,11 @@ public class Form extends AppCompatActivity {
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(verifyEmail() && submitName && verifyPhone()) {
+                if(verifyEmail() && verifyFirstName() && verifyLastName() && verifyPhone()) {
                     Entry entry = new Entry();
-                    entry.setName(editTextFirstName.getEditText().getText().toString() + editTextLastName.getEditText().getText().toString());
+                    entry.setName(formatName(editTextFirstName.getEditText().getText().toString()) + " " + formatName(editTextLastName.getEditText().getText().toString()));
                     entry.setEmail(editTextEmail.getEditText().getText().toString());
-                    entry.setPhoneNo(editTextPhoneNo.getEditText().getText().toString());
+                    entry.setPhoneNo(spinnerCountryCode.getSelectedItem().toString()+editTextPhoneNo.getEditText().getText().toString());
                     entry.setSerialNo(serial);
 
                     databaseReference.push().setValue(entry);
@@ -73,9 +71,13 @@ public class Form extends AppCompatActivity {
                     startActivity(new Intent(Form.this,MainActivity.class));
                     finish();
                 }
-                if(!submitName)
+                if(!verifyLastName())
                 {
-                    Toast.makeText(Form.this,"Error in field name",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Form.this,"Error in field last name",Toast.LENGTH_SHORT).show();
+                }
+                if(!verifyFirstName())
+                {
+                    Toast.makeText(Form.this,"Error in field first name",Toast.LENGTH_SHORT).show();
                 }
                 if(!verifyEmail())
                 {
@@ -249,6 +251,64 @@ public class Form extends AppCompatActivity {
                 }
             }
         });
+
+        editTextFirstName.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String name = s.toString();
+                if(name.length()!=0) {
+                    if (Character.isSpaceChar(name.charAt(name.length() - 1))) {
+                        editTextLastName.requestFocus();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(verifyFirstName()){
+                    editTextFirstName.setError("First name valid");
+                    editTextFirstName.setErrorTextAppearance(R.style.ErrorCorrect);
+                }
+                else {
+                    editTextFirstName.setError("First name invalid");
+                    editTextFirstName.setErrorTextAppearance(R.style.ErrorInCorrect);
+                }
+            }
+        });
+
+        editTextLastName.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String name = s.toString();
+                if(name.length()!=0) {
+                    if (Character.isSpaceChar(name.charAt(name.length() - 1))) {
+                        spinnerCountryCode.requestFocus();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(verifyLastName()){
+                    editTextLastName.setError("Last name valid");
+                    editTextLastName.setErrorTextAppearance(R.style.ErrorCorrect);
+                }
+                else {
+                    editTextLastName.setError("Last name invalid");
+                    editTextLastName.setErrorTextAppearance(R.style.ErrorInCorrect);
+                }
+            }
+        });
     }
 
 
@@ -309,13 +369,32 @@ public class Form extends AppCompatActivity {
         return email.matches("[a-z0-9A-Z_+\\.]+@[a-z0-9A-Z]+\\.[a-zA-Z0-9]+[[\\.]?[a-zA-Z0-9]+[\\.]?[a-zA-Z0-9]]?");
     }
 
+    boolean verifyFirstName(){
+        String firstName=editTextFirstName.getEditText().getText().toString();
+        firstName=firstName.trim();
+        return firstName.matches("[a-zA-Z]+");
+    }
+
+    boolean verifyLastName(){
+        String lastName=editTextLastName.getEditText().getText().toString();
+        lastName=lastName.trim();
+        return lastName.matches("[a-zA-Z]+");
+    }
+
+    String formatName(String name){
+        name=name.trim();
+        name=name.toLowerCase();
+        name=name.replace(name.charAt(0),Character.toUpperCase(name.charAt(0)));
+        return name;
+    }
     void clearErrors()
     {
         if(verifyEmail())
             editTextEmail.setErrorEnabled(false);
-
-        editTextFirstName.setErrorEnabled(false);
-        editTextLastName.setErrorEnabled(false);
+        if(verifyFirstName())
+            editTextFirstName.setErrorEnabled(false);
+        if(verifyLastName())
+            editTextLastName.setErrorEnabled(false);
 
         if(verifyPhone())
             editTextPhoneNo.setErrorEnabled(false);
